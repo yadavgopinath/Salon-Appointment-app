@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salon Appointment Booking</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Basic Styling */
+    body {
+      font-family: 'Arial', sans-serif;
+    }
+
+    h2, h3 {
+      color: #333;
+      font-weight: bold;
+    }
+
+    section {
+      padding: 40px 0;
+    }
+
+    /* Profile Section Styling */
+    #profile-form .form-label {
+      font-weight: bold;
+    }
+
+    #profile-form input {
+      border-radius: 8px;
+    }
+
+    #profile-form button {
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      border: none;
+    }
+
+    /* Carousel Styling */
+    .carousel-inner img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+
+    /* Availability Section */
+    #availability-container .availability-card {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .availability-card h5 {
+      color: #007bff;
+    }
+
+    /* Footer Styling */
+    footer {
+      background-color: #f8f9fa;
+      text-align: center;
+    }
+
+    footer p {
+      margin: 0;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Salon Booking</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#services-section">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#profile-section">Profile</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Services Section -->
+  <section id="services-section" class="my-5">
+    <div class="container">
+      <h2 class="text-center">Our Services</h2>
+      <div id="service-carousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner" id="carousel-services">
+          <!-- Dynamic Carousel Items Here -->
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#service-carousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#service-carousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Availability Section -->
+  <section id="availability-section" class="my-5">
+    <div class="container">
+      <h3 class="text-center">Check Service Availability</h3>
+      <div class="row" id="availability-container">
+        <!-- Dynamic Availability Info Here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Profile Section -->
+  <section id="profile-section" class="my-5">
+    <div class="container">
+      <h3 class="text-center">Manage Your Profile</h3>
+      <form id="profile-form">
+        <div class="mb-3">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone</label>
+          <input type="tel" class="form-control" id="phone" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="bg-light py-4">
+    <div class="container text-center">
+      <p>&copy; 2024 Salon Booking. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    async function fetchServices() {
+      try {
+        const response = await axios.get('http://localhost:3000/salon/getservices'); // Update to match your backend
+        const services = response.data;
+        const carouselContainer = document.getElementById('carousel-services');
+
+        services.forEach((service, index) => {
+          const isActive = index === 0 ? 'active' : '';
+          const carouselItem = `
+            <div class="carousel-item ${isActive}">
+              <img src="${service.imageUrl}" class="d-block w-100" alt="${service.name}">
+              <div class="carousel-caption d-none d-md-block">
+                <h5>${service.name}</h5>
+                <p>${service.description}</p>
+                <p><strong>Price:</strong> $${service.price}</p>
+                <button class="btn btn-primary" onclick="checkAvailability(${service.id})">Check Availability</button>
+              </div>
+            </div>
+          `;
+          carouselContainer.innerHTML += carouselItem;
+        });
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    }
+
+// Fetch availability for a service
+async function checkAvailability(serviceId) {
+  try {
+    const response = await axios.get(`/services/${serviceId}/availability`);
+    const availabilityContainer = document.getElementById('availability-container');
+    availabilityContainer.innerHTML = '';
+
+    response.data.forEach(slot => {
+      const availabilityCard = `
+        <div class="col-md-4">
+          <div class="availability-card">
+            <h5>Available Slot: ${slot.timeSlot}</h5>
+            <p>Date: ${slot.date}</p>
+            <button class="btn btn-success">Book Now</button>
+          </div>
+        </div>
+      `;
+      availabilityContainer.innerHTML += availabilityCard;
+    });
+  } catch (error) {
+    console.error('Error fetching availability:', error);
+  }
+}
+
+// Profile management (fetch and update profile)
+async function fetchProfile() {
+  try {
+    const response = await axios.get('/users/profile');
+    document.getElementById('name').value = response.data.name;
+    document.getElementById('email').value = response.data.email;
+    document.getElementById('phone').value = response.data.phone;
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+  }
+}
+
+document.getElementById('profile-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+
+  try {
+    await axios.put('/users/profile', { name, email, phone });
+    alert('Profile updated successfully');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+  }
+});
+
+// On Page Load
+window.onload = function() {
+  fetchServices();
+  fetchProfile();
+};
+
+  </script> <!-- Custom JS for dynamic content -->
+</body>
+</html>
